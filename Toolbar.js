@@ -8,27 +8,6 @@ document.querySelectorAll('.tab-button').forEach((button) => {
   });
 });
 
-document.getElementById('bold').addEventListener('click', () => {
-  currentCell.style.fontWeight = currentCell.style.fontWeight === 'bold' ? 'normal' : 'bold';
-});
-
-document.getElementById('italic').addEventListener('click', () => {
-  currentCell.style.fontStyle = currentCell.style.fontStyle === 'italic' ? 'normal' : 'italic';
-});
-
-document.getElementById('underline').addEventListener('click', () => {
-  // Toggle underline style for currentCell
-  currentCell.style.textDecoration = currentCell.style.textDecoration === 'underline' ? 'none' : 'underline';
-});
-
-// document.getElementById('addRow').addEventListener('click', function () {
-//     addRow();
-// });
-
-// document.getElementById('addCol').addEventListener('click', function () {
-//     addColumn();
-// });
-
 document.getElementById('clearData').addEventListener('click', function () {
   clearData();
 });

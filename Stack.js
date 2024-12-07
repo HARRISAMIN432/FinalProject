@@ -14,5 +14,7 @@ class Stack {
         return this.array.pop()
     }
 
-    peek() { return this.array[top] }
+    peek() { return this.array[this.top] }
+
+    empty() { return this.top === -1 }
 }

@@ -2,39 +2,47 @@ let undo = new Stack();
 let redo = new Stack();
 
 function saveState(cell) {
+    console.log(cell.node.value.trim().length)
+    if(cell.node.value.trim() == "") return
     undo.push({
         cell: cell,
-        value: cell.innerText,
+        PrevValue: cell.node.value,
         style: {
             fontWeight: cell.style.fontWeight,
             fontStyle: cell.style.fontStyle,
             textDecoration: cell.style.textDecoration,
         },
     });
+    
+    console.log(undo.peek())
     redo.array.length = 0; 
 }
 
 function undoAction() {
-    if (undo.array.length === 0) return;
+    if (undo.empty()) return;
     const lastState = undo.pop();
+    console.log(undo.peek())
     redo.push({
         cell: lastState.cell,
-        value: lastState.cell.innerText,
+        prevValue: lastState.cell.innerText,
         style: { ...lastState.cell.style },
     });
-    lastState.cell.innerText = lastState.value;
+    lastState.value = lastState.prevValue || ''
+    lastState.cell.innerText = lastState.value 
     restoreStyles(lastState.cell, lastState.style);
 }
 
 function redoAction() {
-    if (redo.array.length === 0) return;
+    if (redo.empty()) return;
     const lastRedo = redo.pop();
     undo.push({
         cell: lastRedo.cell,
-        value: lastRedo.cell.innerText,
+        prevValue: lastRedo.cell.innerText,
         style: { ...lastRedo.cell.style },
     });
-    lastRedo.cell.innerText = lastRedo.value;
+    if(!lastRedo.prevValue) lastRedo.prevValue = ''
+    lastRedo.value = lastRedo.prevValue
+    lastRedo.cell.innerText = lastRedo.value 
     restoreStyles(lastRedo.cell, lastRedo.style);
 }
 
@@ -64,11 +72,37 @@ document.getElementById('underline').addEventListener('click', () => {
 
 // Undo and redo keyboard shortcuts
 document.addEventListener('keydown', (event) => {
-    if (event.ctrlKey && event.key === 'z') {
-        undoAction();
-    } else if (event.ctrlKey && event.key === 'y') {
-        redoAction();
+    if (event.ctrlKey) {
+        if (event.key.toLowerCase() === 'z') {
+            undoAction();
+        } else if (event.key.toLowerCase() === 'y') {
+            redoAction();
+        }
     }
 });
 
-
+function enableEditing(cell) {
+    if (cell.querySelector('input')) return;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = cell.innerText;
+    input.style.width = `${cell.offsetWidth}px`;
+    input.style.height = `${cell.offsetHeight}px`;
+    input.style.boxSizing = 'border-box';
+    input.style.caretColor = 'transparent'; 
+    cell.innerText = '';
+    cell.appendChild(input);
+    input.focus();
+    input.addEventListener('input', () => {
+        input.style.caretColor = 'black';
+    });
+    const saveInput = () => {
+        cell.node.value = input.value
+        cell.innerText = cell.node.value;
+        saveState(cell); 
+    };
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') input.blur();
+    });
+    input.addEventListener('blur', saveInput);
+}

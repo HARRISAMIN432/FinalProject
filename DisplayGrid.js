@@ -93,30 +93,6 @@ function highlightCell(cell) {
     }
 }
 
-function enableEditing(cell) {
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = cell.innerText;
-    input.style.width = `${cell.offsetWidth}px`;
-    input.style.height = `${cell.offsetHeight}px`;
-    input.style.boxSizing = 'border-box'; 
-    input.style.caretColor = 'transparent';
-    cell.innerText = '';
-    cell.appendChild(input);    
-    input.focus();
-    input.addEventListener('input', () => {
-        input.style.caretColor = 'black'; 
-    });
-    const saveInput = () => {
-        cell.innerText = input.value;
-        cell.node.value = input.value;
-    };
-    input.addEventListener('blur', saveInput);
-    input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') input.blur();
-    });
-}
-
 document.addEventListener('keydown', function (event) {
     if (!currentCell || !currentCell.node) return;
 
