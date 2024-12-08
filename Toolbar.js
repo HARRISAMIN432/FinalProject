@@ -1,4 +1,3 @@
-// Tab switching functionality
 document.querySelectorAll('.tab-button').forEach((button) => {
   button.addEventListener('click', () => {
     document.querySelector('.tab-button.active').classList.remove('active');
@@ -35,7 +34,7 @@ function clearData() {
       col = col.right
     }
     row = row.down
-    }
+  }
 }
 
 

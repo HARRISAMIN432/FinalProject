@@ -1,34 +1,37 @@
 let undo = new Stack();
 let redo = new Stack();
 
-function saveState(cell) {
-    console.log(cell.node.value.trim().length)
-    if(cell.node.value.trim() == "") return
+function saveState(cell, textForUndo = cell.node.value) {
+    if (cell.node.value.trim() == "") return
     undo.push({
         cell: cell,
-        PrevValue: cell.node.value,
+        prevValue: textForUndo,
         style: {
             fontWeight: cell.style.fontWeight,
             fontStyle: cell.style.fontStyle,
             textDecoration: cell.style.textDecoration,
         },
     });
-    
-    console.log(undo.peek())
-    redo.array.length = 0; 
+
+    redo.array.length = 0;
+    undo.print()
 }
 
 function undoAction() {
     if (undo.empty()) return;
-    const lastState = undo.pop();
     console.log(undo.peek())
+
+    const lastState = undo.pop();
+
+
     redo.push({
         cell: lastState.cell,
         prevValue: lastState.cell.innerText,
         style: { ...lastState.cell.style },
     });
     lastState.value = lastState.prevValue || ''
-    lastState.cell.innerText = lastState.value 
+    lastState.cell.node.value = lastState.prevValue
+    lastState.cell.innerText = lastState.value
     restoreStyles(lastState.cell, lastState.style);
 }
 
@@ -40,9 +43,9 @@ function redoAction() {
         prevValue: lastRedo.cell.innerText,
         style: { ...lastRedo.cell.style },
     });
-    if(!lastRedo.prevValue) lastRedo.prevValue = ''
+    if (!lastRedo.prevValue) lastRedo.prevValue = ''
     lastRedo.value = lastRedo.prevValue
-    lastRedo.cell.innerText = lastRedo.value 
+    lastRedo.cell.innerText = lastRedo.value
     restoreStyles(lastRedo.cell, lastRedo.style);
 }
 
@@ -70,7 +73,6 @@ document.getElementById('underline').addEventListener('click', () => {
     currentCell.style.textDecoration = currentCell.style.textDecoration === 'underline' ? 'none' : 'underline';
 });
 
-// Undo and redo keyboard shortcuts
 document.addEventListener('keydown', (event) => {
     if (event.ctrlKey) {
         if (event.key.toLowerCase() === 'z') {
@@ -83,13 +85,14 @@ document.addEventListener('keydown', (event) => {
 
 function enableEditing(cell) {
     if (cell.querySelector('input')) return;
+    let textForUndo = cell.innerText
     const input = document.createElement('input');
     input.type = 'text';
     input.value = cell.innerText;
     input.style.width = `${cell.offsetWidth}px`;
     input.style.height = `${cell.offsetHeight}px`;
     input.style.boxSizing = 'border-box';
-    input.style.caretColor = 'transparent'; 
+    input.style.caretColor = 'transparent';
     cell.innerText = '';
     cell.appendChild(input);
     input.focus();
@@ -98,8 +101,14 @@ function enableEditing(cell) {
     });
     const saveInput = () => {
         cell.node.value = input.value
+        if(!input.value.empty){
+            if(input.value[0] === "="){
+                cell.node.formula = input.value
+                cell.node.value = evaluate(cell).toString()
+            }
+        }
         cell.innerText = cell.node.value;
-        saveState(cell); 
+        saveState(cell, textForUndo);
     };
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') input.blur();
