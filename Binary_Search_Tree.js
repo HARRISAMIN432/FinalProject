@@ -43,7 +43,7 @@ class BST {
     _find(node, value, results) {
         if (!node) return;
         if (typeof value === 'string') {
-            if (node.value.toLowerCase().includes(value.toLowerCase())) {
+            if (node.value.toLowerCase().startsWith(value.toLowerCase())) {
                 results.push(...node.cells);
             }
         } else {
