@@ -2,17 +2,44 @@ function evaluate(cell) {
     const formula = cell.node.formula;
     const content = formula.slice(1).trim();
     if (/^SUM|MUL|MAX|MIN/i.test(content)) return evaluateFunction(content, list);
+    else if (/^[A-Z]+\d+([+\-*/^][A-Z]+\d+)+$/i.test(content)) return evaluateArithmetic(content, list);
     else return '#NAME?';
 }
+
+function evaluateArithmetic(formula, list) {
+    const cellRefs = formula.match(/[A-Z]+\d+/g);
+    const values = cellRefs.map(cellRef => {
+        const [row, col] = getCellCoordinates(cellRef);
+        const node = list.getNode(row - 1, col - 1);
+        return node ? parseFloat(node.value) || 0 : 0;
+    });
+    return values.reduce((acc, value, index) => {
+        if (index === 0) return value;
+        const operator = formula.charAt(cellRefs[index - 1].length);
+        switch (operator) {
+            case '+':
+                return acc + value;
+            case '-':
+                return acc - value;
+            case '*':
+                return acc * value;
+            case '/':
+                return acc / value;
+            default:
+                return acc;
+        }
+    }, 0);
+}
+
 
 function evaluateFunction(content, list) {
     const match = content.match(/^(\w+)\((.+)\)$/i);
     if (!match) return '#NAME?';
-    const funcName = match[1].toUpperCase(); 
-    const range = match[2].trim(); 
-    const cells = parseRange(range, list); 
+    const funcName = match[1].toUpperCase();
+    const range = match[2].trim();
+    const cells = parseRange(range, list);
     if (!cells) return '#NAME?';
-    
+
     switch (funcName) {
         case "SUM":
             return cells.reduce((sum, cell) => sum + (parseFloat(cell.value) || 0), 0);
@@ -56,14 +83,14 @@ function parseRange(range, list) {
         return cells;
     }
 
-    return null; 
+    return null;
 }
 
 function getCellCoordinates(cell) {
     const match = cell.match(/^([A-Z]+)([0-9]+)$/);
     if (!match) throw new Error("Invalid Cell Reference");
     const column = match[1];
-    const row = parseInt(match[2], 10); 
+    const row = parseInt(match[2], 10);
     let colIndex = 0;
     for (let i = 0; i < column.length; i++) {
         colIndex = colIndex * 26 + (column.charCodeAt(i) - 'A'.charCodeAt(0) + 1);

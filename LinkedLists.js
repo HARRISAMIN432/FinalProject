@@ -25,6 +25,14 @@ class TernaryLinkedList {
         return temp
     }
 
+    columnToIndex(colLetters) {
+        let colIndex = 0;
+        for (let i = 0; i < colLetters.length; i++) {
+            colIndex = colIndex * 26 + (colLetters.charCodeAt(i) - "A".charCodeAt(0) + 1);
+        }
+        return colIndex - 1;
+    }
+
     insertNode(i, j) {
         const node = new Node(i,j);
         if (i === 0 && j === 0) {
