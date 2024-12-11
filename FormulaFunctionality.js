@@ -1,16 +1,18 @@
-function evaluate(cell) {
+function evaluate(cell, cellRefsInFormula) {
     const formula = cell.node.formula;
     const content = formula.slice(1).trim();
-    if (/^SUM|MUL|MAX|MIN/i.test(content)) return evaluateFunction(content, list);
-    else if (/^[A-Z]+\d+([+\-*/^][A-Z]+\d+)+$/i.test(content)) return evaluateArithmetic(content, list);
+    if (/^SUM|MUL|MAX|MIN/i.test(content)) return evaluateFunction(content, list, cellRefsInFormula);
+    else if (/^[A-Z]+\d+([+\-*/^][A-Z]+\d+)+$/i.test(content)) return evaluateArithmetic(content, list, cellRefsInFormula);
     else return '#NAME?';
 }
 
-function evaluateArithmetic(formula, list) {
+function evaluateArithmetic(formula, list, cellRefsInFormula) {
     const cellRefs = formula.match(/[A-Z]+\d+/g);
+    console.log(cellRefs)
     const values = cellRefs.map(cellRef => {
         const [row, col] = getCellCoordinates(cellRef);
         const node = list.getNode(row - 1, col - 1);
+        cellRefsInFormula.push([row - 1, col - 1]);
         return node ? parseFloat(node.value) || 0 : 0;
     });
     return values.reduce((acc, value, index) => {
@@ -32,12 +34,17 @@ function evaluateArithmetic(formula, list) {
 }
 
 
-function evaluateFunction(content, list) {
+function evaluateFunction(content, list, cellRefsInFormula) {
     const match = content.match(/^(\w+)\((.+)\)$/i);
     if (!match) return '#NAME?';
     const funcName = match[1].toUpperCase();
     const range = match[2].trim();
     const cells = parseRange(range, list);
+
+    cells.forEach(cell => {
+        cellRefsInFormula.push(cell.ref);
+    });
+
     if (!cells) return '#NAME?';
 
     switch (funcName) {
@@ -55,20 +62,18 @@ function evaluateFunction(content, list) {
 }
 
 function parseRange(range, list) {
-    // Check if the range is a comma-separated list of cells (e.g., A1,A2)
     const commaSeparatedMatch = range.match(/^([A-Z]+\d+)(?:,([A-Z]+\d+))*$/);
     if (commaSeparatedMatch) {
         const cells = [];
         const cellRefs = range.split(',');
         for (const cellRef of cellRefs) {
             const [row, col] = getCellCoordinates(cellRef);
-            const node = list.getNode(row - 1, col - 1); // Adjust for 0-based index
+            const node = list.getNode(row - 1, col - 1);
             if (node) cells.push(node);
         }
         return cells;
     }
 
-    // Handle colon-separated range (e.g., A1:A3)
     const rangeMatch = range.match(/^([A-Z]+\d+):([A-Z]+\d+)$/);
     if (rangeMatch) {
         const [startRow, startCol] = getCellCoordinates(rangeMatch[1]);
@@ -82,7 +87,6 @@ function parseRange(range, list) {
         }
         return cells;
     }
-
     return null;
 }
 
