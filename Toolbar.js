@@ -7,6 +7,30 @@ document.querySelectorAll('.tab-button').forEach((button) => {
   });
 });
 
+function restoreStyles(cell, style) {
+  cell.style.fontWeight = style.fontWeight || 'normal';
+  cell.style.fontStyle = style.fontStyle || 'normal';
+  cell.style.textDecoration = style.textDecoration || 'none';
+}
+
+document.getElementById('bold').addEventListener('click', () => {
+  if (!currentCell) return;
+  saveState(currentCell);
+  currentCell.style.fontWeight = currentCell.style.fontWeight === 'bold' ? 'normal' : 'bold';
+});
+
+document.getElementById('italic').addEventListener('click', () => {
+  if (!currentCell) return;
+  saveState(currentCell);
+  currentCell.style.fontStyle = currentCell.style.fontStyle === 'italic' ? 'normal' : 'italic';
+});
+
+document.getElementById('underline').addEventListener('click', () => {
+  if (!currentCell) return;
+  saveState(currentCell);
+  currentCell.style.textDecoration = currentCell.style.textDecoration === 'underline' ? 'none' : 'underline';
+});
+
 document.getElementById('clearData').addEventListener('click', function () {
   clearData();
 });
@@ -36,8 +60,6 @@ function clearData() {
     row = row.down
   }
 }
-
-
 
 function toggleGridlines() {
   console.log('Toggling gridlines...');
