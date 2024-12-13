@@ -87,7 +87,7 @@ document.addEventListener('keydown', (event) => {
 
 function enableEditing(cell) {
     if (cell.querySelector('input')) return;
-    let textForUndo = cell.innerText
+    let textForUndo = cell.innerText;
     const input = document.createElement('input');
     input.type = 'text';
     input.value = cell.innerText;
@@ -102,36 +102,34 @@ function enableEditing(cell) {
         input.style.caretColor = 'black';
     });
     const saveInput = () => {
-        cell.node.value = input.value
+        cell.node.value = input.value;
         if (!input.value.empty) {
             if (input.value[0] === "=") {
-                cellRefsInFormula = []
-                cell.node.formula = input.value
-                cell.node.value = evaluate(cell, cellRefsInFormula).toString()
-
-                if(cell.node.value !== "#NAME?") {
-                    graph.addNode(cell.node.ref, cellRefsInFormula);
-
-                    if(graph.detectCycle()) {
+                let cellRefsInFormula = [];
+                cell.node.formula = input.value;
+                cell.node.value = evaluate(cell, cellRefsInFormula).toString();
+                if (cell.node.value !== "#NAME?") {
+                    graph.addNode(cell.node.ref, cellRefsInFormula); 
+                    if (graph.detectCycle()) {
                         alert("There should be no circular dependency! Please correct the formula");
                         graph.removeNode(cell.node.ref);
                         currentCell.querySelector('input').value = "";
-                        return
+                        return;
                     }
                 }
             }
         }
         cell.innerText = cell.node.value;
-
         if (cell.node.value) {
             if (!isNaN(cell.node.value)) {
-                numberBST.insert(cell.node.ref, Number(cell.node.value))
+                numberBST.insert(cell.node.ref, Number(cell.node.value));
             } else {
-                if (cell.node.value !== "#NAME?")
-                    stringBST.insert(cell.node.ref, cell.node.value)
+                if (cell.node.value !== "#NAME?") {
+                    stringBST.insert(cell.node.ref, cell.node.value);
+                }
             }
         }
-
+        graph.reevaluateAllDependencies(cell);
         saveState(cell, textForUndo);
     };
     input.addEventListener('keydown', (event) => {
