@@ -13,16 +13,14 @@ function saveState(cell, textForUndo = cell.node.value) {
         },
     });
 
-    redo.array.length = 0;
+    redo = new Stack();
 }
 
 function undoAction() {
     if (undo.empty()) return;
-    console.log(undo.peek())
 
     const lastState = undo.pop();
-
-
+    
     redo.push({
         cell: lastState.cell,
         prevValue: lastState.cell.innerText,

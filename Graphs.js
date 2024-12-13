@@ -1,8 +1,8 @@
 function getCellReference(row, colIndex) {
     let column = "";
-    colIndex += 1; 
+    colIndex += 1;
     while (colIndex > 0) {
-        colIndex--; 
+        colIndex--;
         const remainder = colIndex % 26;
         column = String.fromCharCode('A'.charCodeAt(0) + remainder) + column;
         colIndex = Math.floor(colIndex / 26);
@@ -11,8 +11,8 @@ function getCellReference(row, colIndex) {
 }
 
 function parseCellReference(cellRef) {
-    const columnPart = cellRef.match(/[A-Z]+/)[0]; 
-    const rowPart = cellRef.match(/\d+/)[0];      
+    const columnPart = cellRef.match(/[A-Z]+/)[0];
+    const rowPart = cellRef.match(/\d+/)[0];
     let colIndex = 0;
     for (let i = 0; i < columnPart.length; i++) {
         colIndex = colIndex * 26 + (columnPart.charCodeAt(i) - 'A'.charCodeAt(0) + 1);
@@ -21,8 +21,6 @@ function parseCellReference(cellRef) {
     const rowIndex = parseInt(rowPart, 10) - 1;
     return { row: rowIndex, col: colIndex };
 }
-
-
 
 class Graph {
     constructor() {
@@ -53,7 +51,7 @@ class Graph {
 
     detectCycle() {
         const inDegree = new Map();
-        const queue = [];
+        const queue = new Queue();
         const topologicalOrder = [];
 
         for (let [node, dependencies] of this.adjList.entries()) {
@@ -64,30 +62,31 @@ class Graph {
         }
 
         for (let [node, degree] of inDegree.entries()) {
-            if (degree === 0) queue.push(node);
+            if (degree === 0) queue.enqueue(node);
         }
 
-        while (queue.length > 0) {
-            const node = queue.shift();
+        while (!queue.empty()) {
+            const node = queue.dequeue();
             topologicalOrder.push(node);
 
             if (this.adjList.has(node)) {
                 for (let neighbor of this.adjList.get(node)) {
                     inDegree.set(neighbor, inDegree.get(neighbor) - 1);
-                    if (inDegree.get(neighbor) === 0) queue.push(neighbor);
+                    if (inDegree.get(neighbor) === 0) queue.enqueue(neighbor);
                 }
             }
         }
+
         return topologicalOrder.length !== this.adjList.size;
     }
 
     reevaluateAllDependencies(cell) {
-        for(let [nodeName, dependencies] of this.adjList) {
-            for(let i of dependencies) {
+        for (let [nodeName, dependencies] of this.adjList) {
+            for (let i of dependencies) {
                 let rowCol = parseCellReference(i)
-                if(cell.node.ref[0] == rowCol.row && cell.node.ref[1] == rowCol.col) {
+                if (cell.node.ref[0] == rowCol.row && cell.node.ref[1] == rowCol.col) {
                     let cellRefsInFormula = []
-                    rowCol = parseCellReference(nodeName) 
+                    rowCol = parseCellReference(nodeName)
                     let actualNode = list.getNode(rowCol.row, rowCol.col)
                     actualNode.value = evaluate(actualNode.domElement, cellRefsInFormula).toString()
                     actualNode.domElement.innerText = actualNode.value

@@ -11,6 +11,7 @@ for (let i = 0; i < rows; i++) {
 let currentCell = null;
 function display(list) {
     let container = document.getElementById('grid-container');
+    container.innerHTML = '';
     let table = document.createElement('table');
     let currRow = list.head;
     while (currRow) {

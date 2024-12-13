@@ -2,17 +2,17 @@ function evaluate(cell, cellRefsInFormula) {
     const formula = cell.node.formula;
     const content = formula.slice(1).trim();
     if (/^SUM|MUL|MAX|MIN/i.test(content)) return evaluateFunction(content, list, cellRefsInFormula);
-    else if (/^[A-Z]+\d+([+\-*/^][A-Z]+\d+)+$/i.test(content)) return evaluateArithmetic(content, list, cellRefsInFormula);
+    else if (/^([A-Z]+\d+|\d+)([+\-*/^]([A-Z]+\d+|\d+))+$/i.test(content)) return evaluateArithmetic(content, list, cellRefsInFormula);
     else return '#NAME?';
 }
 
 function evaluateArithmetic(formula, list, cellRefsInFormula) {
-    const cellRefs = formula.match(/[A-Z]+\d+/g); 
+    const cellRefs = formula.match(/[A-Z]+\d+|\d+(\.\d+)?/g) || [];
     const operators = formula.match(/[\+\-\*\/\^]/g);
     const postfix = [];
-    const stack = [];
+    const stack = new Stack();
 
-    const precedence = operator => {
+    const precedence = (operator) => {
         switch (operator) {
             case '^': return 3;
             case '*': case '/': return 2;
@@ -27,20 +27,24 @@ function evaluateArithmetic(formula, list, cellRefsInFormula) {
         lastIndex += cellRef.length;
 
         if (operators && operators.length > 0 && lastIndex < formula.length) {
-            while (stack.length > 0 && precedence(operators[0]) <= precedence(stack[stack.length - 1])) {
+            while (stack.size() > 0 && precedence(operators[0]) <= precedence(stack.peek())) {
                 postfix.push(stack.pop());
             }
             stack.push(operators.shift());
         }
     }
 
-    while (stack.length > 0) {
+    while (stack.size() > 0) {
         postfix.push(stack.pop());
     }
 
-    const evalStack = [];
+    const evalStack = new Stack();
     for (const token of postfix) {
-        if (/[A-Z]+\d+/.test(token)) {
+        if (/[A-Z]+\d+|\d+(\.\d+)?/g.test(token)) {
+            if (!isNaN(parseFloat(token))) {
+                evalStack.push(parseFloat(token));
+                continue;
+            }
             const [row, col] = getCellCoordinates(token);
             const node = list.getNode(row - 1, col - 1);
             cellRefsInFormula.push([row - 1, col - 1]);
@@ -59,7 +63,7 @@ function evaluateArithmetic(formula, list, cellRefsInFormula) {
         }
     }
 
-    return evalStack[0];
+    return evalStack.peek();
 }
 
 function parseRange(range, list) {
