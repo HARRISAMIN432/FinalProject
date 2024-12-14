@@ -66,6 +66,30 @@ function evaluateArithmetic(formula, list, cellRefsInFormula) {
     return evalStack.peek();
 }
 
+function evaluateFunction(content, list, cellRefsInFormula) {
+    const match = content.match(/^(\w+)\((.+)\)$/i);
+    if (!match) return '#NAME?';
+    const funcName = match[1].toUpperCase();
+    const range = match[2].trim();
+    const cells = parseRange(range, list);
+    cells.forEach(cell => {
+        cellRefsInFormula.push(cell.ref);
+    });
+    if (!cells) return '#NAME?';
+    switch (funcName) {
+        case "SUM":
+            return cells.reduce((sum, cell) => sum + (parseFloat(cell.value) || 0), 0);
+        case "MUL":
+            return cells.reduce((product, cell) => product * (parseFloat(cell.value) || 1), 1);
+        case "MAX":
+            return Math.max(...cells.map(cell => parseFloat(cell.value) || 0));
+        case "MAX":
+            return Math.min(...cells.map(cell => parseFloat(cell.value) || 0));
+        default:
+            return '#NAME?';
+    }
+}
+
 function parseRange(range, list) {
     const commaSeparatedMatch = range.match(/^([A-Z]+\d+)(?:,([A-Z]+\d+))*$/);
     if (commaSeparatedMatch) {

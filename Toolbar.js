@@ -31,6 +31,39 @@ document.getElementById('underline').addEventListener('click', () => {
     currentCell.style.textDecoration = currentCell.style.textDecoration === 'underline' ? 'none' : 'underline';
 });
 
+document.getElementById('fontSizeDropdown').addEventListener('change', function () {
+    const selectedFontSize = this.value;
+    const activeCell = document.querySelector('.highlight');
+    if (activeCell) {
+        activeCell.style.fontSize = selectedFontSize + 'px';
+    }
+});
+
+document.getElementById('alignLeft').addEventListener('click', () => {
+    const selectedCell = getSelectedCell();
+    if (selectedCell) {
+        selectedCell.style.textAlign = 'left';
+    }
+});
+
+document.getElementById('alignCenter').addEventListener('click', () => {
+    const selectedCell = getSelectedCell(); 
+    if (selectedCell) {
+        selectedCell.style.textAlign = 'center';
+    }
+});
+
+document.getElementById('alignRight').addEventListener('click', () => {
+    const selectedCell = getSelectedCell(); 
+    if (selectedCell) {
+        selectedCell.style.textAlign = 'right';
+    }
+});
+
+function getSelectedCell() {
+    return document.querySelector('.highlight'); 
+}
+
 document.getElementById('clearData').addEventListener('click', function () {
     clearData();
 });

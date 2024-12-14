@@ -38,13 +38,9 @@ function enableEditing(cell) {
         }
         cell.innerText = cell.node.value;
         if (cell.node.value) {
-            if (!isNaN(cell.node.value)) {
-                numberBST.insert(cell.node.ref, Number(cell.node.value));
-            } else {
-                if (cell.node.value !== "#NAME?") {
-                    stringBST.insert(cell.node.ref, cell.node.value);
-                }
-            }
+            if (!isNaN(cell.node.value)) numberBST.insert(cell.node.ref, Number(cell.node.value));
+            else 
+                if (cell.node.value !== "#NAME?") stringBST.insert(cell.node.ref, cell.node.value);
         }
         graph.reevaluateAllDependencies(cell);
         saveState(cell, textForUndo);

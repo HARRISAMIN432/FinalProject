@@ -43,10 +43,8 @@ class Graph {
 
     removeNode(cell) {
         const node = getCellReference(cell[0], cell[1]);
-
-        if (this.adjList.has(node)) {
-            this.adjList.delete(node);
-        }
+        if (this.adjList.has(node)) this.adjList.delete(node);
+        console.log(this.adjList)
     }
 
     detectCycle() {
@@ -90,6 +88,7 @@ class Graph {
                     let actualNode = list.getNode(rowCol.row, rowCol.col)
                     actualNode.value = evaluate(actualNode.domElement, cellRefsInFormula).toString()
                     actualNode.domElement.innerText = actualNode.value
+                    saveState(actualNode.domElement, actualNode.value)
                 }
             }
         }

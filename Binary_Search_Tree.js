@@ -34,6 +34,31 @@ class BST {
         return node;
     }
 
+    delete(rootNode, key) {
+        if (!rootNode) return rootNode
+        if (key < rootNode.value) node.left = this.delete(rootNode.left, key)
+        else if (key > rootNode.value) rootNode.right = this.delete(rootNode.right, key)
+        else {
+            if(!this.root.left) {
+                let temp = rootNode.right
+                rootNode = null
+                return temp
+            }
+            else if(!this.root.right) {
+                let temp = rootNode.left
+                rootNode = null
+                return temp
+            }
+            let curr = rootNode.right
+            while(curr.left) curr = curr.left
+            let temp = curr
+            rootNode.value = temp.value
+            rootNode.cells = temp.cells
+            rootNode.right = this.delete(rootNode.right, temp.value)
+            return rootNode
+        }
+    }
+
     find(value) {
         const results = [];
         this._find(this.root, value, results);
