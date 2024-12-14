@@ -6,9 +6,35 @@ function evaluate(cell, cellRefsInFormula) {
     else return '#NAME?';
 }
 
+function evaluateFunction(content, list, cellRefsInFormula) {
+    const match = content.match(/^(\w+)\((.+)\)$/i);
+    if (!match) return '#NAME?';
+    const funcName = match[1].toUpperCase();
+    const range = match[2].trim();
+    const cells = parseRange(range, list);
+    cells.forEach(cell => {
+        cellRefsInFormula.push(cell.ref);
+    });
+    if (!cells) return '#NAME?';
+    switch (funcName) {
+        case "SUM":
+            return cells.reduce((sum, cell) => sum + (parseFloat(cell.value) || 0), 0);
+        case "MUL":
+            return cells.reduce((product, cell) => product * (parseFloat(cell.value) || 1), 1);
+        case "MAX":
+            return Math.max(...cells.map(cell => parseFloat(cell.value) || 0));
+        case "MAX":
+            return Math.min(...cells.map(cell => parseFloat(cell.value) || 0));
+        default:
+            return '#NAME?';
+    }
+}
+
 function evaluateArithmetic(formula, list, cellRefsInFormula) {
-    const operators = new Stack(); 
-    const postfix = new Stack(); 
+    const cellRefs = formula.match(/[A-Z]+\d+/g); 
+    const operators = formula.match(/[\+\-\*\/\^]/g); 
+    const postfix = [];
+    const stack = [];
     const precedence = operator => {
         switch (operator) {
             case '^': return 3;
@@ -17,41 +43,27 @@ function evaluateArithmetic(formula, list, cellRefsInFormula) {
             default: return 0;
         }
     };
-    let index = 0;
-    while (index < formula.length) {
-        const token = formula[index];
-        if (/[A-Z]/.test(token)) {
-            const match = formula.slice(index).match(/[A-Z]+\d+/);
-            if (match) {
-                postfix.push(match[0]);
-                index += match[0].length;
+    let lastIndex = 0;
+    for (const cellRef of cellRefs) {
+        postfix.push(cellRef); 
+        lastIndex += cellRef.length;
+        if (operators && operators.length > 0 && lastIndex < formula.length) {
+            while (stack.length > 0 && precedence(operators[0]) <= precedence(stack[stack.length - 1])) {
+               
+                postfix.push(stack.pop());
             }
-        } else if (/\d/.test(token)) {
-            const match = formula.slice(index).match(/\d+(\.\d+)?/);
-            if (match) {
-                postfix.push(parseFloat(match[0]));
-                index += match[0].length;
-            }
-        } else if (/[\+\-\*\/\^]/.test(token)) {
-            while (!operators.empty() && precedence(token) <= precedence(operators.peek())) {
-                postfix.push(operators.pop());
-            }
-            operators.push(token);
-            index++;
-        } else index++
+            stack.push(operators.shift()); 
+        }
     }
-    while (!operators.empty()) postfix.push(operators.pop());
-    const evalStack = new Stack();
-    while (!postfix.empty()) {
-        const token = postfix.pop();
-        if (typeof token === 'string' && /[A-Z]+\d+/.test(token)) {
+    while (stack.length > 0) postfix.push(stack.pop());
+    const evalStack = [];
+    for (const token of postfix) {
+        if (/[A-Z]+\d+/.test(token)) {
             const [row, col] = getCellCoordinates(token);
             const node = list.getNode(row - 1, col - 1);
             cellRefsInFormula.push([row - 1, col - 1]);
             evalStack.push(node ? parseFloat(node.value) || 0 : 0);
-        } else if (typeof token === 'number') {
-            evalStack.push(token);
-        } else if (/[\+\-\*\/\^]/.test(token)) {
+        } else {
             const b = evalStack.pop();
             const a = evalStack.pop();
             switch (token) {
@@ -64,7 +76,7 @@ function evaluateArithmetic(formula, list, cellRefsInFormula) {
             }
         }
     }
-    return evalStack.pop();
+    return evalStack[0];
 }
 
 function parseRange(range, list) {
