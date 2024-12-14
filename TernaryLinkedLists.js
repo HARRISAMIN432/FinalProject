@@ -33,26 +33,32 @@ class TernaryLinkedList {
         return colIndex - 1;
     }
 
-    insertNode(i, j) {
-        const node = new Node(i,j);
-        if (i === 0 && j === 0) {
+    insertNode(row, col) {
+        const node = new Node(row, col);
+    
+        if (row === 0 && col === 0) {
             this.head = node;
             this.end = node;
             return;
         }
-        if (j > 0) {
-            node.left = this.end; 
-            this.end.right = node;
-        } else if (j === 0 && i > 0) {
-            let prevRowStart = this.getNode(i - 1, 0);
-            prevRowStart.down = node;
-            node.up = prevRowStart;
+    
+        if (col > 0) {
+            const leftNode = this.getNode(row, col - 1);
+            if (leftNode) {
+                node.left = leftNode;
+                leftNode.right = node;
+            }
         }
-        if (i > 0) {
-            let upperNode = this.getNode(i - 1, j);
-            node.up = upperNode;
-            upperNode.down = node;
+    
+        if (row > 0) {
+            const upperNode = this.getNode(row - 1, col);
+            if (upperNode) {
+                node.up = upperNode;
+                upperNode.down = node;
+            }
         }
+    
         this.end = node;
     }
+    
 }
