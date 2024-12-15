@@ -20,6 +20,7 @@ document.getElementById('bold').addEventListener('click', () => {
     currentCell.style.fontWeight = currentCell.style.fontWeight === 'bold' ? 'normal' : 'bold';
 });
 
+
 document.getElementById('italic').addEventListener('click', () => {
     if (!currentCell) return;
     saveState(currentCell);
@@ -30,6 +31,22 @@ document.getElementById('underline').addEventListener('click', () => {
     if (!currentCell) return;
     saveState(currentCell);
     currentCell.style.textDecoration = currentCell.style.textDecoration === 'underline' ? 'none' : 'underline';
+});
+
+document.addEventListener('keydown', (event) => {
+    if (!currentCell) return;
+    if (event.ctrlKey) {
+        if (event.key.toLowerCase() === 'b') {
+            saveState(currentCell);
+            currentCell.style.fontWeight = currentCell.style.fontWeight === 'bold' ? 'normal' : 'bold';
+        } else if (event.key.toLowerCase() === 'i') {
+            saveState(currentCell);
+            currentCell.style.fontStyle = currentCell.style.fontStyle === 'italic' ? 'normal' : 'italic';
+        } else if (event.key.toLowerCase() === 'q') {
+            saveState(currentCell);
+            currentCell.style.textDecoration = currentCell.style.textDecoration === 'underline' ? 'none' : 'underline';
+        }
+    }
 });
 
 document.getElementById('fontSizeDropdown').addEventListener('change', function () {
