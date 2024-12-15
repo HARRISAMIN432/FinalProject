@@ -7,22 +7,22 @@ document.addEventListener('keydown', (e) => {
 
 function search() {
     const existingBox = document.getElementById('search-box');
-    if (existingBox) return; 
+    if (existingBox) return;
 
     const searchBox = document.createElement('div');
-searchBox.id = 'search-box';
-searchBox.style.position = 'fixed';
-searchBox.style.top = '10px';
-searchBox.style.right = '10px';
-searchBox.style.zIndex = 1000;
-searchBox.style.background = '#ffffff';
-searchBox.style.border = '1px solid #ccc';
-searchBox.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
-searchBox.style.padding = '15px';
-searchBox.style.borderRadius = '8px';
-searchBox.style.fontFamily = 'Arial, sans-serif';
+    searchBox.id = 'search-box';
+    searchBox.style.position = 'fixed';
+    searchBox.style.top = '10px';
+    searchBox.style.right = '10px';
+    searchBox.style.zIndex = 1000;
+    searchBox.style.background = '#ffffff';
+    searchBox.style.border = '1px solid #ccc';
+    searchBox.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
+    searchBox.style.padding = '15px';
+    searchBox.style.borderRadius = '8px';
+    searchBox.style.fontFamily = 'Arial, sans-serif';
 
-searchBox.innerHTML = `
+    searchBox.innerHTML = `
     <input type="text" id="search-input" placeholder="Find..." 
         style="padding: 8px; border: 1px solid #ccc; border-radius: 5px; width: 150px; margin-right: 10px; font-size: 14px;">
     <button id="search-btn" 

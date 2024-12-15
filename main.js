@@ -36,10 +36,16 @@ function enableEditing(cell) {
                 }
             }
         }
+        if (textForUndo) {
+            if (!isNaN(textForUndo))
+                numberBST.root = numberBST.delete(numberBST.root, textForUndo, cell.node.ref);
+            else
+                stringBST.root = stringBST.delete(stringBST.root, textForUndo, cell.node.ref)
+        }
         cell.innerText = cell.node.value;
         if (cell.node.value) {
             if (!isNaN(cell.node.value)) numberBST.insert(cell.node.ref, Number(cell.node.value));
-            else 
+            else
                 if (cell.node.value !== "#NAME?") stringBST.insert(cell.node.ref, cell.node.value);
         }
         graph.reevaluateAllDependencies(cell);

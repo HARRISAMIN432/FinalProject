@@ -7,11 +7,7 @@ function saveState(cell, textForUndo = cell.node.value) {
         cell: cell,
         prevValue: textForUndo,
         Prevformula: cell.node.formula,
-        style: {
-            fontWeight: cell.style.fontWeight,
-            fontStyle: cell.style.fontStyle,
-            textDecoration: cell.style.textDecoration,
-        },
+        style: { ...cell.style },
     });
     redo = new Stack();
 }
@@ -26,9 +22,19 @@ function undoAction() {
         style: { ...lastState.cell.style },
     });
     lastState.value = lastState.prevValue || ''
+    if (lastState.cell.node.value !== lastState.prevValue) {
+        if (!isNaN(lastState.cell.node.value)) {
+            numberBST.root = numberBST.delete(numberBST.root, lastState.cell.node.value, lastState.cell.node.ref);
+            numberBST.insert(lastState.cell.node.ref, Number(lastState.prevValue));
+        }
+        else {
+            stringBST.root = stringBST.delete(stringBST.root, lastState.cell.node.value, lastState.cell.node.ref)
+            if (lastState.prevValue !== "#NAME?" && lastState.prevValue !== "") stringBST.insert(lastState.cell.node.ref, lastState.prevValue);
+        }
+    }
     lastState.cell.node.value = lastState.prevValue
     lastState.cell.innerText = lastState.value
-    lastState.formula = lastState.Prevformula
+    lastState.cell.node.formula = lastState.Prevformula
     restoreStyles(lastState.cell, lastState.style);
     if (!lastState.cell.node.value.trim()) graph.removeNode(lastState.cell.node.ref);
     else graph.reevaluateAllDependencies(lastState.cell);
@@ -44,7 +50,7 @@ function redoAction() {
     });
     if (!lastRedo.prevValue) lastRedo.prevValue = ''
     lastRedo.value = lastRedo.prevValue
-    lastRedo.cell.innerText = lastRedo.value; 
+    lastRedo.cell.innerText = lastRedo.value;
     restoreStyles(lastRedo.cell, lastRedo.style);
     if (lastRedo.value.startsWith('=')) {
         let cellRefsInFormula = [];

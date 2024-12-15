@@ -11,6 +11,7 @@ function restoreStyles(cell, style) {
     cell.style.fontWeight = style.fontWeight || 'normal';
     cell.style.fontStyle = style.fontStyle || 'normal';
     cell.style.textDecoration = style.textDecoration || 'none';
+    cell.style.textAlign = style.textAlign || 'center';
 }
 
 document.getElementById('bold').addEventListener('click', () => {
@@ -40,28 +41,25 @@ document.getElementById('fontSizeDropdown').addEventListener('change', function 
 });
 
 document.getElementById('alignLeft').addEventListener('click', () => {
-    const selectedCell = getSelectedCell();
-    if (selectedCell) {
-        selectedCell.style.textAlign = 'left';
-    }
+    if (!currentCell) return;
+    saveState(currentCell);
+    currentCell.style.textAlign = 'left';
 });
 
 document.getElementById('alignCenter').addEventListener('click', () => {
-    const selectedCell = getSelectedCell(); 
-    if (selectedCell) {
-        selectedCell.style.textAlign = 'center';
-    }
+    if (!currentCell) return;
+    saveState(currentCell);
+    currentCell.style.textAlign = 'center';
 });
 
 document.getElementById('alignRight').addEventListener('click', () => {
-    const selectedCell = getSelectedCell(); 
-    if (selectedCell) {
-        selectedCell.style.textAlign = 'right';
-    }
+    if (!currentCell) return;
+    saveState(currentCell);
+    currentCell.style.textAlign = 'right';
 });
 
 function getSelectedCell() {
-    return document.querySelector('.highlight'); 
+    return document.querySelector('.highlight');
 }
 
 document.getElementById('clearData').addEventListener('click', function () {
@@ -76,8 +74,7 @@ function insertRow() {
 function insertColumn() {
     for (let i = 0; i < rows; i++) {
         list.insertNode(i, cols);
-        console.log("done")
-    }   
+    }
     cols++;
 }
 document.getElementById('insertRow').addEventListener('click', function () {

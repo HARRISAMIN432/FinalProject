@@ -34,30 +34,47 @@ class BST {
         return node;
     }
 
-    delete(rootNode, key) {
-        if (!rootNode) return rootNode
-        if (key < rootNode.value) node.left = this.delete(rootNode.left, key)
-        else if (key > rootNode.value) rootNode.right = this.delete(rootNode.right, key)
-        else {
-            if(!this.root.left) {
-                let temp = rootNode.right
-                rootNode = null
-                return temp
+    delete(rootNode, key, cellref) {
+        if (!rootNode) return rootNode;
+
+        if (key < rootNode.value) {
+            rootNode.left = this.delete(rootNode.left, key, cellref);
+        } else if (key > rootNode.value) {
+            rootNode.right = this.delete(rootNode.right, key, cellref);
+        } else {
+            console.log(rootNode)
+            const cellIndex = rootNode.cells.findIndex(
+                (ref) => ref[0] === cellref[0] && ref[1] === cellref[1]
+            );
+
+            if (cellIndex !== -1) {
+                rootNode.cells.splice(cellIndex, 1);
             }
-            else if(!this.root.right) {
-                let temp = rootNode.left
-                rootNode = null
-                return temp
+
+            if (rootNode.cells.length > 0) {
+                return rootNode;
             }
-            let curr = rootNode.right
-            while(curr.left) curr = curr.left
-            let temp = curr
-            rootNode.value = temp.value
-            rootNode.cells = temp.cells
-            rootNode.right = this.delete(rootNode.right, temp.value)
-            return rootNode
+
+            if (!rootNode.left) {
+                let temp = rootNode.right;
+                rootNode = null;
+                return temp;
+            } else if (!rootNode.right) {
+                let temp = rootNode.left;
+                rootNode = null;
+                return temp;
+            }
+
+            let curr = rootNode.right;
+            while (curr.left) curr = curr.left;
+            rootNode.value = curr.value;
+            rootNode.cells = curr.cells;
+            rootNode.right = this.delete(rootNode.right, curr.value, cellref);
         }
+
+        return rootNode;
     }
+
 
     find(value) {
         const results = [];

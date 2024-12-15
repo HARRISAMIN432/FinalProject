@@ -61,7 +61,7 @@ function addColumnHeaders() {
         headerCell.style.fontWeight = 'bold';
         headerCell.classList.add('resizable');
         headerCell.style.position = 'relative';  
-        const resizeHandle = document.createElement('div');
+        const resizeHandle = document.createElement('div'); 
         resizeHandle.style.position = 'absolute';
         resizeHandle.style.right = '0';
         resizeHandle.style.top = '0';
@@ -72,7 +72,6 @@ function addColumnHeaders() {
         headerRow.appendChild(headerCell);
     }
     table.prepend(headerRow);
-    attachResizeListeners();
 }
 
 function addRowHeaders() {

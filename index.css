@@ -11,8 +11,8 @@ body {
 table {
     border-collapse: collapse;
     margin: 20px auto;
-    background-color: #ffffff; 
-    font-family: 'Roboto', Arial, sans-serif; 
+    background-color: #ffffff;
+    font-family: 'Roboto', Arial, sans-serif;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
@@ -24,8 +24,13 @@ td {
     text-align: center;
     border: 1px solid #ddd;
     font-size: 14px;
-    cursor: pointer; 
+    cursor: pointer;
     transition: background-color 0.3s, transform 0.1s;
+}
+
+th {
+    resize: horizontal;
+    overflow: auto;
 }
 
 td:hover {
@@ -35,26 +40,32 @@ td:hover {
 
 .highlight {
     border: 3px solid #4caf50;
-    background-color: #dfffe5; 
+    background-color: #dfffe5;
     animation: pulse 0.5s alternate infinite;
 }
 
 @keyframes pulse {
-    0% { border-color: #4caf50; }
-    100% { border-color: #81c784; }
+    0% {
+        border-color: #4caf50;
+    }
+
+    100% {
+        border-color: #81c784;
+    }
 }
 
-tr td:first-child, tr:first-child td {
-    background-color: #f5f5f5; 
+tr td:first-child,
+tr:first-child td {
+    background-color: #f5f5f5;
     font-weight: bold;
     text-transform: uppercase;
 }
 
 #grid-container {
-    margin-top: 20px; 
+    margin-top: 20px;
     padding: 10px;
-    overflow-x: auto; 
-    overflow-y: auto; 
+    overflow-x: auto;
+    overflow-y: auto;
     background-color: #ffffff;
     border: 1px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -63,10 +74,10 @@ tr td:first-child, tr:first-child td {
 
 #ribbon {
     position: fixed;
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    z-index: 1000; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
     background-color: #ffffff;
     border-bottom: 2px solid #ddd;
     padding: 10px;
@@ -168,7 +179,8 @@ tr td:first-child, tr:first-child td {
 }
 
 /* Input Focus */
-input:focus, select:focus {
+input:focus,
+select:focus {
     outline: none;
     border: 1px solid #4caf50;
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
@@ -181,14 +193,19 @@ input:focus, select:focus {
 }
 
 @keyframes flash {
-    0% { background-color: #c8e6c9; }
-    100% { background-color: #a5d6a7; }
+    0% {
+        background-color: #c8e6c9;
+    }
+
+    100% {
+        background-color: #a5d6a7;
+    }
 }
 
 td.resizable {
     position: relative;
     cursor: ew-resize;
-    min-width: 50px;  
+    min-width: 50px;
 }
 
 td.resizable::after {
