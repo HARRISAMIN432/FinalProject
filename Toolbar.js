@@ -198,18 +198,3 @@ style.innerHTML = `
     }
 `;
 document.head.appendChild(style);
-
-const button = document.createElement('button');
-button.textContent = "Toggle Theme";
-button.onclick = toggleTheme;
-document.body.appendChild(button);
-
-const table = document.createElement('table');
-for (let i = 0; i < 5; i++) {
-    const row = table.insertRow();
-    for (let j = 0; j < 5; j++) {
-        const cell = row.insertCell();
-        cell.textContent = `Row ${i + 1}, Col ${j + 1}`;
-    }
-}
-document.body.appendChild(table);
